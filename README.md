@@ -96,7 +96,7 @@ data-engineering-journey/
 |------|---------|-------|
 | Snowflake | Cloud Data Warehouse | 🔄 Learning |
 | SQL | Query & transformation language | ✅ Comfortable |
-| Python | Scripting & Snowpark | 🔄 Learning |
+| Python | Scripting & Snowpark | ✅ Comfortable |
 | dbt | Data transformation framework | ⬜ Planned |
 | Apache Airflow | Orchestration | ⬜ Planned |
 | Apache Kafka | Streaming ingestion | ⬜ Planned |
@@ -104,7 +104,8 @@ data-engineering-journey/
 | Docker | Containerisation & local dev environments | 🔄 Learning |
 | GitHub Actions | CI/CD pipelines & workflow automation | 🔄 Learning |
 | Terraform | Infrastructure as Code (IaC) | ⬜ Planned |
-| Linux / Bash | Scripting & server operations | 🔄 Learning |
+| Linux / Bash | Scripting & server operations | ⬜ Planned|
+| Power BI | Dashboard building | ✅ Comfortable |
 
 ---
 
