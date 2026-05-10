@@ -67,3 +67,86 @@ CREATE OR REPLACE STAGE exercise_db.ex_stages.aws_stages
 
  SELECT COUNT(*) as Row_Count 
     FROM exercise_db.public.CUSTOMERS
+
+
+-- ==========================================
+-- ASSIGNMENT 3
+-- ==========================================
+
+-- 1. Create a stage & file format object
+
+-- Creating File Format
+CREATE OR REPLACE SCHEMA EXERCISE_DB.FILE_FORMATS;
+
+Create or Replace file format exercise_db.file_formats.my_format;
+
+ALTER file format exercise_db.file_formats.my_format
+    Set SKIP_HEADER = 1
+    Field_delimiter = '|';
+
+DESC file format exercise_db.file_formats.my_format;
+
+TRUNCATE table EXERCISE_DB.PUBLIC.CUSTOMERS;
+
+-- Creating STAGE
+CREATE OR REPLACE STAGE exercise_db.ex_stages.aws_stages_v3
+    url='s3://snowflake-assignments-mc/fileformat/';
+
+DESC STAGE exercise_db.ex_stages.aws_stages_v3;
+
+-- 2. List the files in the table
+List @exercise_db.ex_stages.aws_stages_v3;
+
+-- 3. Load the data in the existing customers table using the COPY command your stage and the created file format object.
+
+COPY into exercise_db.public.customers
+    From @exercise_db.ex_stages.aws_stages_v3
+    file_format = (format_name = exercise_db.file_formats.my_format)
+
+-- 4. How many rows have been loaded in this assignment?
+
+Select Count(*) As row_count
+    from exercise_db.public.customers;
+-- Total: 250
+
+-- ==========================================
+-- ASSIGNMENT 4
+-- ==========================================
+
+-- 1. Create a table called employees with the following columns and data types
+
+create or replace table exercise_db.public.Employees (
+  customer_id int,
+  first_name varchar(50),
+  last_name varchar(50),
+  email varchar(50),
+  age int,
+  department varchar(50)
+)   
+
+-- 2. Create a stage object pointing to 's3://snowflake-assignments-mc/copyoptions/example1'
+
+create or replace stage exercise_db.ex_stages.aws_stages_v4
+    url='s3://snowflake-assignments-mc/copyoptions/example1';
+
+-- 3. Create a file format object with the specification
+Create or Replace file format exercise_db.file_formats.my_format_v1;
+
+ALTER file format exercise_db.file_formats.my_format_v1
+ Set Field_delimiter = ','
+     Skip_header = 1;
+
+-- 4. Use the copy option to only validate if there are errors
+COPY INTO exercise_db.public.employees
+    FROM @exercise_db.ex_stages.aws_stages_v4
+    file_format = (format_name = exercise_db.file_formats.my_format_v1)
+    VALIDATION_MODE = RETURN_ERRORS;
+
+-- 5. Load the data anyways regardless of the error using the ON_ERROR option
+COPY INTO exercise_db.public.employees
+    FROM @exercise_db.ex_stages.aws_stages_v4
+    file_format = (format_name = exercise_db.file_formats.my_format_v1)
+    ON_ERROR = CONTINUE;
+
+SELECT COUNT(*) AS rows_loaded FROM exercise_db.public.employees;
+-- Total: 121
