@@ -150,3 +150,43 @@ COPY INTO exercise_db.public.employees
 
 SELECT COUNT(*) AS rows_loaded FROM exercise_db.public.employees;
 -- Total: 121
+
+
+-- ==========================================
+-- ASSIGNMENT 5
+-- ==========================================
+
+-- 1. Create a table called employees
+CREATE OR REPLACE TABLE EXERCISE_DB.PUBLIC.EMPLOYEES (
+  customer_id INT,
+  first_name VARCHAR(50),
+  last_name VARCHAR(50),
+  email VARCHAR(50),
+  age INT,
+  department VARCHAR(50)
+);
+
+-- 2. Create a stage object pointing to s3://snowflake-assignments-mc/copyoptions/example2
+CREATE OR REPLACE STAGE EXERCISE_DB.EX_STAGES.AWS_STAGES_V5
+    url='s3://snowflake-assignments-mc/copyoptions/example2';
+
+-- 3. Create a file format object
+CREATE OR REPLACE FILE FORMAT EXERCISE_DB.FILE_FORMATS.MY_FORMAT_V2
+    TYPE = CSV
+    FIELD_DELIMITER = ','
+    SKIP_HEADER = 1;
+
+-- 4. Use COPY with VALIDATION_MODE to check for errors
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @EXERCISE_DB.EX_STAGES.AWS_STAGES_V5
+    file_format = (format_name = EXERCISE_DB.FILE_FORMATS.MY_FORMAT_V2)
+    VALIDATION_MODE = RETURN_ERRORS;
+
+-- 5. Load data using TRUNCATECOLUMNS to handle values exceeding column length
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @EXERCISE_DB.EX_STAGES.AWS_STAGES_V5
+    file_format = (format_name = EXERCISE_DB.FILE_FORMATS.MY_FORMAT_V2)
+    TRUNCATECOLUMNS = TRUE;
+
+select count(*) as total_number from EXERCISE_DB.PUBLIC.EMPLOYEES;
+-- 62
